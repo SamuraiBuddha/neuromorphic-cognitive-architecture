@@ -37,3 +37,21 @@ services:
     networks:
       - neuromorphic_network
     restart: unless-stopped
+
+  # BASAL GANGLIA: Neo4j - Procedural Memory, Habit Patterns
+  basal_ganglia:
+    image: neo4j:5-community
+    container_name: neuromorphic-basal-ganglia
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - basal_ganglia_data:/data
+      - basal_ganglia_logs:/logs
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-neuromorphic2025}
+      - NEO4J_dbms_memory_heap_initial__size=512m
+      - NEO4J_dbms_memory_heap_max__size=1G
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
