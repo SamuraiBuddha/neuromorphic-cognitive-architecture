@@ -55,3 +55,16 @@ services:
     networks:
       - neuromorphic_network
     restart: unless-stopped
+
+  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal
+  thalamus:
+    image: surrealdb/surrealdb:latest
+    container_name: neuromorphic-thalamus
+    ports:
+      - "8000:8000"
+    volumes:
+      - thalamus_data:/data
+    command: start --log trace --user neuromorphic --pass ${SURREAL_PASSWORD:-neuromorphic2025} file:/data/thalamus.db
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
