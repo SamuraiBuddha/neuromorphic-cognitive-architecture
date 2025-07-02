@@ -51,14 +51,34 @@ SURREAL_PASSWORD=your_surreal_password
 MONGO_PASSWORD=your_mongo_password
 ```
 
-### Service Endpoints
+### Service Endpoints (Conflict-Free Ports)
 
-- **Hippocampus (Redis)**: localhost:6379
-- **Neocortex (PostgreSQL)**: localhost:5432
-- **Basal Ganglia (Neo4j)**: localhost:7474 (UI), localhost:7687 (Bolt)
-- **Thalamus (SurrealDB)**: localhost:8000
-- **Amygdala (MongoDB)**: localhost:27017
-- **Cerebellum (Kafka)**: localhost:9092
+- **Hippocampus (Redis)**: localhost:6380
+- **Neocortex (PostgreSQL)**: localhost:5433
+- **Basal Ganglia (Neo4j)**: localhost:7475 (UI), localhost:7688 (Bolt)
+- **Thalamus (SurrealDB)**: localhost:8001
+- **Amygdala (MongoDB)**: localhost:27018
+- **Cerebellum (Kafka)**: localhost:9093
+- **Zookeeper**: localhost:2182
+
+> **Note**: Ports have been adjusted to avoid conflicts with existing services on your system.
+
+### Connection Examples
+
+**Connect to Neocortex (PostgreSQL):**
+```bash
+psql -h localhost -p 5433 -U neuromorphic -d neocortex
+```
+
+**Connect to Amygdala (MongoDB):**
+```bash
+mongosh --host localhost --port 27018 -u neuromorphic -p neuromorphic2025
+```
+
+**Access Basal Ganglia (Neo4j Browser):**
+```
+http://localhost:7475
+```
 
 ### Architecture Benefits
 
@@ -67,6 +87,7 @@ MONGO_PASSWORD=your_mongo_password
 ✅ **Production Ready**: Docker orchestration with persistent volumes  
 ✅ **Scalable Foundation**: Evolution path to unlimited processor constellation  
 ✅ **MCP Integration**: Ready for Claude Desktop biomimetic tools  
+✅ **Conflict-Free**: Adjusted ports avoid interference with existing services
 
 ### Author
 
