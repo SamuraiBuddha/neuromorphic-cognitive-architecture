@@ -85,3 +85,47 @@ services:
     networks:
       - neuromorphic_network
     restart: unless-stopped
+
+  # CEREBELLUM: Apache Kafka - Motor Memory, Execution Patterns
+  cerebellum:
+    image: confluentinc/cp-kafka:latest
+    container_name: neuromorphic-cerebellum
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+    depends_on:
+      - zookeeper
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
+
+  # Zookeeper for Kafka coordination
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: neuromorphic-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
+
+volumes:
+  hippocampus_data:
+  neocortex_data:
+  basal_ganglia_data:
+  basal_ganglia_logs:
+  thalamus_data:
+  amygdala_data:
+
+networks:
+  neuromorphic_network:
+    driver: bridge
