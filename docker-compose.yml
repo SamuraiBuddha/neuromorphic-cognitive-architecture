@@ -30,3 +30,10 @@ services:
     volumes:
       - neocortex_data:/var/lib/postgresql/data
       - ./sql/init_neocortex.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=neocortex
+      - POSTGRES_USER=neuromorphic
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-neuromorphic2025}
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
