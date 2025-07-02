@@ -68,3 +68,20 @@ services:
     networks:
       - neuromorphic_network
     restart: unless-stopped
+
+  # AMYGDALA: MongoDB - Emotional Memory, Importance Weighting
+  amygdala:
+    image: mongo:7
+    container_name: neuromorphic-amygdala
+    ports:
+      - "27017:27017"
+    volumes:
+      - amygdala_data:/data/db
+      - ./config/mongod.conf:/etc/mongod.conf
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=neuromorphic
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-neuromorphic2025}
+      - MONGO_INITDB_DATABASE=amygdala
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
