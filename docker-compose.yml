@@ -10,11 +10,9 @@ services:
     image: redis:7-alpine
     container_name: neuromorphic-hippocampus
     ports:
-      - "6380:6379"  # Changed from 6379 to avoid conflicts
+      - "6380:6379"
     volumes:
       - hippocampus_data:/data
-      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-neuromorphic2025}
     networks:
@@ -26,10 +24,9 @@ services:
     image: postgres:15-alpine
     container_name: neuromorphic-neocortex
     ports:
-      - "5433:5432"  # Changed from 5432 to avoid conflicts
+      - "5433:5432"
     volumes:
       - neocortex_data:/var/lib/postgresql/data
-      - ./sql/init_neocortex.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRES_DB=neocortex
       - POSTGRES_USER=neuromorphic
@@ -43,8 +40,8 @@ services:
     image: neo4j:5-community
     container_name: neuromorphic-basal-ganglia
     ports:
-      - "7475:7474"  # Changed from 7474 to avoid conflicts
-      - "7688:7687"  # Changed from 7687 to avoid conflicts
+      - "7475:7474"
+      - "7688:7687"
     volumes:
       - basal_ganglia_data:/data
       - basal_ganglia_logs:/logs
@@ -56,15 +53,15 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal
+  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (FIXED)
   thalamus:
     image: surrealdb/surrealdb:latest
     container_name: neuromorphic-thalamus
     ports:
-      - "8001:8000"  # Changed from 8000 to avoid conflicts
+      - "8001:8000"
     volumes:
       - thalamus_data:/data
-    command: start --log trace --user neuromorphic --pass ${SURREAL_PASSWORD:-neuromorphic2025} file:/data/thalamus.db
+    command: ["start", "--bind", "0.0.0.0:8000", "--user", "neuromorphic", "--pass", "neuromorphic2025", "file:///data/thalamus.db"]
     networks:
       - neuromorphic_network
     restart: unless-stopped
@@ -74,10 +71,9 @@ services:
     image: mongo:7
     container_name: neuromorphic-amygdala
     ports:
-      - "27018:27017"  # Changed from 27017 to avoid conflicts
+      - "27018:27017"
     volumes:
       - amygdala_data:/data/db
-      - ./config/mongod.conf:/etc/mongod.conf
     environment:
       - MONGO_INITDB_ROOT_USERNAME=neuromorphic
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-neuromorphic2025}
@@ -86,37 +82,52 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # CEREBELLUM: Apache Kafka - Motor Memory, Execution Patterns
-  cerebellum:
-    image: confluentinc/cp-kafka:latest
-    container_name: neuromorphic-cerebellum
-    ports:
-      - "9093:9092"  # Changed from 9092 to avoid conflicts
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9093
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
-      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
-    depends_on:
-      - zookeeper
-    networks:
-      - neuromorphic_network
-    restart: unless-stopped
-
-  # Zookeeper for Kafka coordination
+  # Zookeeper for Kafka coordination (MUST start first)
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: neuromorphic-zookeeper
     ports:
-      - "2182:2181"  # Changed from 2181 to avoid conflicts
+      - "2182:2181"
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
       - ZOOKEEPER_TICK_TIME=2000
+      - ZOOKEEPER_SERVER_ID=1
     networks:
       - neuromorphic_network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # CEREBELLUM: Apache Kafka - Motor Memory, Execution Patterns (FIXED)
+  cerebellum:
+    image: confluentinc/cp-kafka:latest
+    container_name: neuromorphic-cerebellum
+    ports:
+      - "9093:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=neuromorphic-zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://neuromorphic-cerebellum:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_LOG_RETENTION_HOURS=168
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   hippocampus_data:
