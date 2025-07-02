@@ -10,7 +10,7 @@ services:
     image: redis:7-alpine
     container_name: neuromorphic-hippocampus
     ports:
-      - "6379:6379"
+      - "6380:6379"  # Changed from 6379 to avoid conflicts
     volumes:
       - hippocampus_data:/data
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf
@@ -26,7 +26,7 @@ services:
     image: postgres:15-alpine
     container_name: neuromorphic-neocortex
     ports:
-      - "5432:5432"
+      - "5433:5432"  # Changed from 5432 to avoid conflicts
     volumes:
       - neocortex_data:/var/lib/postgresql/data
       - ./sql/init_neocortex.sql:/docker-entrypoint-initdb.d/init.sql
@@ -43,8 +43,8 @@ services:
     image: neo4j:5-community
     container_name: neuromorphic-basal-ganglia
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "7475:7474"  # Changed from 7474 to avoid conflicts
+      - "7688:7687"  # Changed from 7687 to avoid conflicts
     volumes:
       - basal_ganglia_data:/data
       - basal_ganglia_logs:/logs
@@ -61,7 +61,7 @@ services:
     image: surrealdb/surrealdb:latest
     container_name: neuromorphic-thalamus
     ports:
-      - "8000:8000"
+      - "8001:8000"  # Changed from 8000 to avoid conflicts
     volumes:
       - thalamus_data:/data
     command: start --log trace --user neuromorphic --pass ${SURREAL_PASSWORD:-neuromorphic2025} file:/data/thalamus.db
@@ -74,7 +74,7 @@ services:
     image: mongo:7
     container_name: neuromorphic-amygdala
     ports:
-      - "27017:27017"
+      - "27018:27017"  # Changed from 27017 to avoid conflicts
     volumes:
       - amygdala_data:/data/db
       - ./config/mongod.conf:/etc/mongod.conf
@@ -91,11 +91,11 @@ services:
     image: confluentinc/cp-kafka:latest
     container_name: neuromorphic-cerebellum
     ports:
-      - "9092:9092"
+      - "9093:9092"  # Changed from 9092 to avoid conflicts
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9093
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
       - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
@@ -110,7 +110,7 @@ services:
     image: confluentinc/cp-zookeeper:latest
     container_name: neuromorphic-zookeeper
     ports:
-      - "2181:2181"
+      - "2182:2181"  # Changed from 2181 to avoid conflicts
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
       - ZOOKEEPER_TICK_TIME=2000
