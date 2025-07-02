@@ -40,6 +40,16 @@ This repository contains a production-ready neuromorphic cognitive architecture 
    docker-compose ps
    ```
 
+4. **Test Connections (No Additional Software Required):**
+   ```bash
+   # Quick health check
+   docker exec neuromorphic-hippocampus redis-cli -a neuromorphic2025 ping
+   docker exec neuromorphic-neocortex pg_isready -U neuromorphic
+   docker exec neuromorphic-amygdala mongosh --eval "db.runCommand({ping: 1})"
+   ```
+
+   📋 **Full Testing Guide:** See [TESTING.md](TESTING.md) for comprehensive connection tests
+
 ### Environment Configuration
 
 Create `.env` file with your passwords:
@@ -63,22 +73,16 @@ MONGO_PASSWORD=your_mongo_password
 
 > **Note**: Ports have been adjusted to avoid conflicts with existing services on your system.
 
-### Connection Examples
+### Browser Access (No CLI Required)
 
-**Connect to Neocortex (PostgreSQL):**
-```bash
-psql -h localhost -p 5433 -U neuromorphic -d neocortex
-```
+- **Neo4j Browser**: http://localhost:7475 (neo4j / neuromorphic2025)
+- **Container Logs**: `docker-compose logs [service-name]`
 
-**Connect to Amygdala (MongoDB):**
-```bash
-mongosh --host localhost --port 27018 -u neuromorphic -p neuromorphic2025
-```
+### Troubleshooting
 
-**Access Basal Ganglia (Neo4j Browser):**
-```
-http://localhost:7475
-```
+**Port conflicts?** All ports are pre-adjusted to avoid common conflicts.  
+**Connection issues?** Use Docker-based tests in [TESTING.md](TESTING.md) - no additional software required.  
+**Container problems?** Check logs: `docker-compose logs`
 
 ### Architecture Benefits
 
@@ -87,7 +91,8 @@ http://localhost:7475
 ✅ **Production Ready**: Docker orchestration with persistent volumes  
 ✅ **Scalable Foundation**: Evolution path to unlimited processor constellation  
 ✅ **MCP Integration**: Ready for Claude Desktop biomimetic tools  
-✅ **Conflict-Free**: Adjusted ports avoid interference with existing services
+✅ **Conflict-Free**: Adjusted ports avoid interference with existing services  
+✅ **No Dependencies**: All testing uses Docker containers - no external tools needed
 
 ### Author
 
