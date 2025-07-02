@@ -1,0 +1,32 @@
+# Neuromorphic Cognitive Architecture
+# 6-Database Brain Region Implementation
+# Weight-Based Eidetic Memory System for 1000x Cognitive Amplification
+
+version: '3.8'
+
+services:
+  # HIPPOCAMPUS: Redis - Episodic Memory, Rapid Encoding/Retrieval
+  hippocampus:
+    image: redis:7-alpine
+    container_name: neuromorphic-hippocampus
+    ports:
+      - "6379:6379"
+    volumes:
+      - hippocampus_data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-neuromorphic2025}
+    networks:
+      - neuromorphic_network
+    restart: unless-stopped
+
+  # NEOCORTEX: PostgreSQL - Semantic Memory, Structured Knowledge  
+  neocortex:
+    image: postgres:15-alpine
+    container_name: neuromorphic-neocortex
+    ports:
+      - "5432:5432"
+    volumes:
+      - neocortex_data:/var/lib/postgresql/data
+      - ./sql/init_neocortex.sql:/docker-entrypoint-initdb.d/init.sql
