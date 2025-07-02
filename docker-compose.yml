@@ -53,15 +53,16 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (SIMPLIFIED)
+  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (PERMISSION FIXED)
   thalamus:
     image: surrealdb/surrealdb:latest
     container_name: neuromorphic-thalamus
     ports:
       - "8001:8000"
     volumes:
-      - thalamus_data:/data
-    command: start file:///data/neuromorphic.db --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025
+      - thalamus_data:/opt/surrealdb/data
+    user: "1000:1000"
+    command: start file:///opt/surrealdb/data/neuromorphic.db --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025
     networks:
       - neuromorphic_network
     restart: unless-stopped
@@ -95,7 +96,7 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # CEREBELLUM: Apache Kafka - Motor Memory, Execution Patterns (ULTRA SIMPLIFIED)
+  # CEREBELLUM: Apache Kafka - Motor Memory, Execution Patterns (KRAFT MODE FIXED)
   cerebellum:
     image: confluentinc/cp-kafka:latest
     container_name: neuromorphic-cerebellum
@@ -103,13 +104,22 @@ services:
       - "9093:9092"
     environment:
       - KAFKA_BROKER_ID=1
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9093
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_NODE_ID=1
+      - KAFKA_CLUSTER_ID=neuromorphic-cluster-001
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_LOG_DIRS=/var/lib/kafka/data
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
-    depends_on:
-      - zookeeper
+    volumes:
+      - cerebellum_data:/var/lib/kafka/data
     networks:
       - neuromorphic_network
     restart: unless-stopped
@@ -121,6 +131,7 @@ volumes:
   basal_ganglia_logs:
   thalamus_data:
   amygdala_data:
+  cerebellum_data:
 
 networks:
   neuromorphic_network:
