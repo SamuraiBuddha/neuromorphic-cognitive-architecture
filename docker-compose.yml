@@ -53,7 +53,7 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (FIXED PORT 8082)
+  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (FIXED COMMAND SYNTAX)
   thalamus:
     image: surrealdb/surrealdb:latest
     container_name: neuromorphic-thalamus
@@ -62,7 +62,7 @@ services:
     volumes:
       - thalamus_data:/opt/surrealdb/data
     user: "1000:1000"
-    command: start --serve --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025 -- file:///opt/surrealdb/data/neuromorphic.db
+    command: start --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025 file:///opt/surrealdb/data/neuromorphic.db
     networks:
       - neuromorphic_network
     restart: unless-stopped
@@ -96,13 +96,14 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # CEREBELLUM: Apache Kafka - Motor Memory, Execution Patterns (KRAFT MODE FIXED)
+  # CEREBELLUM: Apache Kafka - Motor Memory, Execution Patterns (FIXED CLUSTER_ID)
   cerebellum:
     image: confluentinc/cp-kafka:latest
     container_name: neuromorphic-cerebellum
     ports:
       - "9093:9092"
     environment:
+      - CLUSTER_ID=neuromorphic-cluster-001
       - KAFKA_BROKER_ID=1
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9093
