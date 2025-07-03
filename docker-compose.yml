@@ -53,7 +53,7 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (PERMISSION FIXED)
+  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (FIXED)
   thalamus:
     image: surrealdb/surrealdb:latest
     container_name: neuromorphic-thalamus
@@ -62,7 +62,7 @@ services:
     volumes:
       - thalamus_data:/opt/surrealdb/data
     user: "1000:1000"
-    command: start file:///opt/surrealdb/data/neuromorphic.db --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025
+    command: start --serve --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025 -- file:///opt/surrealdb/data/neuromorphic.db
     networks:
       - neuromorphic_network
     restart: unless-stopped
