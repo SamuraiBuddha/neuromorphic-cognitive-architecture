@@ -2,7 +2,7 @@
 # Removed obsolete 'version' attribute
 # Updated Neo4j image to working version
 # Fixed port conflicts with existing hybrid memory stack
-# Added thalamus back with proper nginx.conf
+# Fixed thalamus port conflict with Enterprise DB (8080 -> 8082)
 
 services:
   # Graph Database - Knowledge Storage (Neo4j)
@@ -67,8 +67,8 @@ services:
     image: nginx:alpine
     container_name: thalamus
     ports:
-      - "8080:80"     # HTTP routing
-      - "8443:443"    # HTTPS routing
+      - "8082:80"     # HTTP routing (avoiding 8080 Enterprise DB conflict)
+      - "8445:443"    # HTTPS routing (avoiding 8443 conflict)
       - "6381:6381"   # Redis proxy
       - "9094:9094"   # Kafka proxy
     volumes:
