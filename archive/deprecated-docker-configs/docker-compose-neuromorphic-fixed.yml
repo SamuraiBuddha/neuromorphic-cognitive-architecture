@@ -1,0 +1,110 @@
+# Neuromorphic Brain Architecture - Complete Version
+# Removed obsolete 'version' attribute
+# Updated Neo4j image to working version
+# Fixed port conflicts with existing hybrid memory stack
+# Fixed thalamus port conflict with Enterprise DB (8080 -> 8082)
+
+services:
+  # Graph Database - Knowledge Storage (Neo4j)
+  cerebellum:
+    image: neo4j:2025.05.0  # Fixed: was neo4j:5.3-community
+    container_name: cerebellum
+    environment:
+      - NEO4J_AUTH=neo4j/neuromorphic
+      - NEO4J_dbms_memory_pagecache_size=512M
+      - NEO4J_dbms_memory_heap_initial__size=512M
+      - NEO4J_dbms_memory_heap_max__size=1G
+    ports:
+      - "7475:7474"   # HTTP (avoiding 7474 conflict)
+      - "7688:7687"   # Bolt (avoiding 7687 conflict)
+    volumes:
+      - cerebellum_data:/data
+      - cerebellum_logs:/logs
+    networks:
+      - neuromorphic_net
+
+  # Message Queue - Inter-region Communication (Kafka)
+  brainstem:
+    image: confluentinc/cp-kafka:latest
+    container_name: brainstem
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9093:9092"   # Avoiding 9092 conflict
+    depends_on:
+      - zookeeper
+    networks:
+      - neuromorphic_net
+
+  # Coordination Service for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2182:2181"   # Avoiding 2181 conflict
+    networks:
+      - neuromorphic_net
+
+  # Memory Processing Hub (Redis)
+  hippocampus:
+    image: redis:7-alpine
+    container_name: hippocampus
+    command: redis-server --appendonly yes
+    ports:
+      - "6380:6379"   # Fixed: was 6379 (conflict with hybrid memory)
+    volumes:
+      - hippocampus_data:/data
+    networks:
+      - neuromorphic_net
+
+  # Routing & Load Balancing (NGINX) - Thalamus Brain Region
+  thalamus:
+    image: nginx:alpine
+    container_name: thalamus
+    ports:
+      - "8082:80"     # HTTP routing
+      - "8443:443"    # HTTPS routing
+      - "6381:6381"   # Redis proxy
+      - "9094:9094"   # Kafka proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - cerebellum
+      - hippocampus
+      - imagination-processor
+    networks:
+      - neuromorphic_net
+
+  # Vector Processing Engine
+  imagination-processor:
+    image: python:3.11-slim
+    container_name: imagination-processor
+    working_dir: /app
+    command: >
+      bash -c "
+        pip install fastapi uvicorn numpy pandas scikit-learn transformers torch &&
+        python -c 'from fastapi import FastAPI; app = FastAPI(); 
+        @app.get(\"/health\"); 
+        def health(): return {\"status\": \"neuromorphic\"}; 
+        import uvicorn; uvicorn.run(app, host=\"0.0.0.0\", port=8000)'
+      "
+    ports:
+      - "8001:8000"   # Changed to 8001 to avoid any conflicts
+    volumes:
+      - ./processing:/app
+    networks:
+      - neuromorphic_net
+
+volumes:
+  cerebellum_data:
+  cerebellum_logs:
+  hippocampus_data:
+
+networks:
+  neuromorphic_net:
+    driver: bridge
