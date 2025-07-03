@@ -67,7 +67,7 @@ services:
     image: nginx:alpine
     container_name: thalamus
     ports:
-      - "8080:80"     # HTTP routing
+      - "8082:80"     # HTTP routing
       - "8443:443"    # HTTPS routing
       - "6381:6381"   # Redis proxy
       - "9094:9094"   # Kafka proxy
