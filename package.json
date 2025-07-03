@@ -1,6 +1,7 @@
 {
   "name": "neuromorphic-cognitive-architecture",
   "version": "1.0.0",
+  "type":"module",
   "description": "Biomimetic Memory Manager for 1000x cognitive amplification with 6-brain region neuromorphic architecture",
   "main": "BiomimeticMemoryManager.js",
   "scripts": {
@@ -14,19 +15,20 @@
     "stop": "docker-compose down"
   },
   "dependencies": {
-    "redis": "^4.6.0",
-    "pg": "^8.11.0",
-    "neo4j-driver": "^5.14.0",
-    "surrealdb.js": "^0.11.0",
+    "@modelcontextprotocol/sdk": "^1.14.0",
+    "kafkajs": "^2.2.4",
     "mongodb": "^6.3.0",
-    "kafkajs": "^2.2.4"
+    "neo4j-driver": "^5.14.0",
+    "pg": "^8.11.0",
+    "redis": "^4.6.0",
+    "surrealdb.js": "^0.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
   },
   "keywords": [
     "neuromorphic",
-    "cognitive-amplification", 
+    "cognitive-amplification",
     "biomimetic",
     "eidetic-memory",
     "weight-based-memory",
