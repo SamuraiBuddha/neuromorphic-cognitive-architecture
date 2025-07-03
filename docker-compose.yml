@@ -28,7 +28,7 @@ services:
     volumes:
       - neocortex_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=neocortex
+      - POSTGRES_DB=neuromorphic
       - POSTGRES_USER=neuromorphic
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-neuromorphic2025}
     networks:
