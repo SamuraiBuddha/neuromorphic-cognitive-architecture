@@ -53,16 +53,13 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (FIXED COMMAND SYNTAX)
+  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (MEMORY MODE - KNOWN WORKING)
   thalamus:
     image: surrealdb/surrealdb:latest
     container_name: neuromorphic-thalamus
     ports:
       - "8082:8000"
-    volumes:
-      - thalamus_data:/opt/surrealdb/data
-    user: "1000:1000"
-    command: start --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025 file:///opt/surrealdb/data/neuromorphic.db
+    command: start --bind 0.0.0.0:8000 --user neuromorphic --pass neuromorphic2025 memory
     networks:
       - neuromorphic_network
     restart: unless-stopped
@@ -130,7 +127,6 @@ volumes:
   neocortex_data:
   basal_ganglia_data:
   basal_ganglia_logs:
-  thalamus_data:
   amygdala_data:
   cerebellum_data:
 
