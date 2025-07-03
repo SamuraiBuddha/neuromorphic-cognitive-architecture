@@ -53,12 +53,12 @@ services:
       - neuromorphic_network
     restart: unless-stopped
 
-  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (FIXED)
+  # THALAMUS: SurrealDB - Attention/Filtering, Multi-Modal (FIXED PORT 8082)
   thalamus:
     image: surrealdb/surrealdb:latest
     container_name: neuromorphic-thalamus
     ports:
-      - "8001:8000"
+      - "8082:8000"
     volumes:
       - thalamus_data:/opt/surrealdb/data
     user: "1000:1000"
