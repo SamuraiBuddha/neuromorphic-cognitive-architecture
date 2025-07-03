@@ -1,8 +1,8 @@
-# Neuromorphic Brain Architecture - Fixed Version
+# Neuromorphic Brain Architecture - Complete Version
 # Removed obsolete 'version' attribute
 # Updated Neo4j image to working version
 # Fixed port conflicts with existing hybrid memory stack
-# Removed thalamus (NGINX) temporarily - missing config file
+# Added thalamus back with proper nginx.conf
 
 services:
   # Graph Database - Knowledge Storage (Neo4j)
@@ -59,6 +59,24 @@ services:
       - "6380:6379"   # Fixed: was 6379 (conflict with hybrid memory)
     volumes:
       - hippocampus_data:/data
+    networks:
+      - neuromorphic_net
+
+  # Routing & Load Balancing (NGINX) - Thalamus Brain Region
+  thalamus:
+    image: nginx:alpine
+    container_name: thalamus
+    ports:
+      - "8080:80"     # HTTP routing
+      - "8443:443"    # HTTPS routing
+      - "6381:6381"   # Redis proxy
+      - "9094:9094"   # Kafka proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - cerebellum
+      - hippocampus
+      - imagination-processor
     networks:
       - neuromorphic_net
 
