@@ -1,0 +1,52 @@
+{
+  "name": "neuromorphic-cognitive-architecture",
+  "version": "1.0.0",
+  "description": "Biomimetic Memory Manager for 1000x cognitive amplification with 6-brain region neuromorphic architecture",
+  "main": "BiomimeticMemoryManager.js",
+  "scripts": {
+    "start": "node BiomimeticMemoryManager.js",
+    "test": "node test/test-all-regions.js",
+    "test-connections": "node test/test-connections.js",
+    "dev": "nodemon BiomimeticMemoryManager.js",
+    "deploy": "docker-compose up -d",
+    "status": "docker-compose ps",
+    "logs": "docker-compose logs -f",
+    "stop": "docker-compose down"
+  },
+  "dependencies": {
+    "redis": "^4.6.0",
+    "pg": "^8.11.0",
+    "neo4j-driver": "^5.14.0",
+    "surrealdb.js": "^0.11.0",
+    "mongodb": "^6.3.0",
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": [
+    "neuromorphic",
+    "cognitive-amplification", 
+    "biomimetic",
+    "eidetic-memory",
+    "weight-based-memory",
+    "brain-regions",
+    "1000x-amplification",
+    "redis",
+    "postgresql",
+    "neo4j",
+    "surrealdb",
+    "mongodb",
+    "kafka"
+  ],
+  "author": "Jordan Paul Ehrig <jordan@ehrigbim.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SamuraiBuddha/neuromorphic-cognitive-architecture.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "homepage": "https://github.com/SamuraiBuddha/neuromorphic-cognitive-architecture#readme"
+}
